@@ -1,2 +1,4 @@
 homepage: "https://tanelytics.com"
 documentation: "https://github.com/taneli-salonen1/sgtm-ip-address-match"
+  - sha: a582a3610a09df9cd6bf805de1ae9d8aba662c0c
+    changeNotes: Initial release.
