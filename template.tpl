@@ -14,7 +14,6 @@ ___INFO___
   "version": 1,
   "securityGroups": [],
   "displayName": "IP Address Match",
-  "categories": ["UTILITY"],
   "description": "Compare the originating IP address of the request to a list of IP patterns. Returns true if one of the patterns matches.\n\nThe template can be used for IP address exclusion.",
   "containerContexts": [
     "SERVER"
@@ -99,15 +98,15 @@ ___TEMPLATE_PARAMETERS___
 
 ___SANDBOXED_JS_FOR_SERVER___
 
-const getRequestHeader = require('getRequestHeader');
+//const getRequestHeader = require('getRequestHeader');
 const makeInteger = require('makeInteger');
 const Math = require('Math');
 const log = require('logToConsole');
+const getRemoteAddress = require('getRemoteAddress');
 
-// This header contains the originating IP
-const xForwardedFor = getRequestHeader('X-Forwarded-For');
+// the IP address of the incoming request
+const requestIp = getRemoteAddress();
 
-const requestIp = xForwardedFor ? xForwardedFor.split(',')[0] : undefined;
 const excludedIPs = data.excludedIPs;
 
 /*
@@ -189,6 +188,21 @@ ___SERVER_PERMISSIONS___
                   {
                     "type": 1,
                     "string": "X-Forwarded-For"
+                  }
+                ]
+              },
+              {
+                "type": 3,
+                "mapKey": [
+                  {
+                    "type": 1,
+                    "string": "headerName"
+                  }
+                ],
+                "mapValue": [
+                  {
+                    "type": 1,
+                    "string": "Forwarded"
                   }
                 ]
               }
@@ -274,10 +288,8 @@ scenarios:
         {"matchType":"contains","value":".123.62."}]
     };
 
-    mock('getRequestHeader', (key) => {
-      if (key === 'X-Forwarded-For') {
-        return '80.123.62.123';
-      }
+    mock('getRemoteAddress', (key) => {
+      return '80.123.62.123';
     });
 
     // Call runCode to run the template's code.
@@ -295,10 +307,8 @@ scenarios:
         {"matchType":"contains","value":"xxxxxxxxxx"}]
     };
 
-    mock('getRequestHeader', (key) => {
-      if (key === 'X-Forwarded-For') {
-        return '80.123.62.123';
-      }
+    mock('getRemoteAddress', (key) => {
+      return '80.123.62.123';
     });
 
     // Call runCode to run the template's code.
@@ -316,10 +326,8 @@ scenarios:
         {"matchType":"contains","value":"xxxxxxxxxx"}]
     };
 
-    mock('getRequestHeader', (key) => {
-      if (key === 'X-Forwarded-For') {
-        return '80.123.62.123';
-      }
+    mock('getRemoteAddress', (key) => {
+      return '80.123.62.123';
     });
 
     // Call runCode to run the template's code.
@@ -337,10 +345,8 @@ scenarios:
         {"matchType":"contains","value":"xxxxxxxxxx"}]
     };
 
-    mock('getRequestHeader', (key) => {
-      if (key === 'X-Forwarded-For') {
-        return '80.123.62.123';
-      }
+    mock('getRemoteAddress', (key) => {
+      return '80.123.62.123';
     });
 
     // Call runCode to run the template's code.
@@ -359,10 +365,8 @@ scenarios:
         {"matchType":"cidr4","value":"192.168.1.1/24"}]
     };
 
-    mock('getRequestHeader', (key) => {
-      if (key === 'X-Forwarded-For') {
-        return '192.168.1.5';
-      }
+    mock('getRemoteAddress', (key) => {
+      return '192.168.1.5';
     });
 
     // Call runCode to run the template's code.
@@ -381,10 +385,8 @@ scenarios:
         {"matchType":"cidr4","value":"192.168.1.1/24"}]
     };
 
-    mock('getRequestHeader', (key) => {
-      if (key === 'X-Forwarded-For') {
-        return '192.20.1.5';
-      }
+    mock('getRemoteAddress', (key) => {
+      return '192.20.1.5';
     });
 
     // Call runCode to run the template's code.
@@ -398,10 +400,8 @@ scenarios:
       // Mocked field values
     };
 
-    mock('getRequestHeader', (key) => {
-      if (key === 'X-Forwarded-For') {
-        return '192.20.1.5';
-      }
+    mock('getRemoteAddress', (key) => {
+      return '192.20.1.5';
     });
 
     // Call runCode to run the template's code.
@@ -420,10 +420,8 @@ scenarios:
         {"matchType":"cidr4","value":"194.85.35.38/31"}]
     };
 
-    mock('getRequestHeader', (key) => {
-      if (key === 'X-Forwarded-For') {
-        return '194.85.35.40';
-      }
+    mock('getRemoteAddress', (key) => {
+      return '194.85.35.40';
     });
 
     // Call runCode to run the template's code.
