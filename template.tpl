@@ -161,6 +161,8 @@ if (requestIp) {
   return false;
 }
 
+return;
+
 
 ___SERVER_PERMISSIONS___
 
