@@ -56,9 +56,14 @@ ___TEMPLATE_PARAMETERS___
             {
               "value": "cidr4",
               "displayValue": "IPv4 address is in CIDR range"
+            },
+            {
+              "value": "regex",
+              "displayValue": "IP address matches Regex"
             }
           ],
-          "simpleValueType": true
+          "simpleValueType": true,
+          "help": "The type of comparison performed against the IP."
         },
         "isUnique": false
       },
@@ -76,7 +81,8 @@ ___TEMPLATE_PARAMETERS___
             {
               "type": "NON_EMPTY"
             }
-          ]
+          ],
+          "help": "The value that the IP address is compared against."
         },
         "isUnique": false
       },
@@ -135,15 +141,18 @@ const ipMatch = (matchType, value, ip) => {
     return ip === value;
   } else if(matchType === 'begins') {
     return ip.indexOf(value) === 0;
-  } if (matchType === 'ends') {
+  } else if (matchType === 'ends') {
     return strEndsWith(ip, value);
-  } if (matchType === 'contains') {
+  } else if (matchType === 'contains') {
     return ip.indexOf(value) !== -1;
-  } if (matchType === 'cidr4') {
+  } else if (matchType === 'cidr4') {
     // there is no proper validation for cidr ranges
     if(value.split('/').length === 2) {
       return isIp4InCidr(ip, value);
     }
+  } else if (matchType === 'regex') {
+    const matches = ip.match(value);
+    return matches && matches.length > 0;
   }
 };
 
@@ -432,6 +441,31 @@ scenarios:
 
     // Verify that the variable returns a result.
     assertThat(variableResult).isEqualTo(false);
+- name: matches regex
+  code: |-
+    const mockData = {
+      excludedIPs: [
+        {"matchType":"equals","value":"xxxxxxxxxx"},
+        {"matchType":"begins","value":"xxxxxxxxxx"},
+        {"matchType":"ends","value":"xxxxxxxxxx"},
+        {"matchType":"contains","value":"xxxxxxxxxx"},
+        {"matchType":"cidr4","value":"194.85.35.38/31"},
+        {"matchType":"regex","value":"^194.85.35"}
+      ]
+    };
+
+    log('194.85.35.40'.match('/194/i'));
+
+    mock('getRemoteAddress', (key) => {
+      return '194.85.35.40';
+    });
+
+    // Call runCode to run the template's code.
+    let variableResult = runCode(mockData);
+
+    // Verify that the variable returns a result.
+    assertThat(variableResult).isEqualTo(true);
+setup: const log = require('logToConsole');
 
 
 ___NOTES___
