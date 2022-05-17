@@ -14,7 +14,10 @@ ___INFO___
   "version": 1,
   "securityGroups": [],
   "displayName": "IP Address Match",
-  "categories": ["UTILITY", "ANALYTICS"],
+  "categories": [
+    "UTILITY",
+    "ANALYTICS"
+  ],
   "description": "Compare the originating IP address of the request to a list of IP patterns. Returns true if one of the patterns matches.\n\nThe template can be used for IP address exclusion.",
   "containerContexts": [
     "SERVER"
