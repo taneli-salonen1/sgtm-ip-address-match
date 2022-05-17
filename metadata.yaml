@@ -2,7 +2,7 @@ homepage: "https://tanelytics.com"
 documentation: "https://github.com/taneli-salonen1/sgtm-ip-address-match"
 versions:
   # Latest version
-  - sha: fdfecaeff7efb1d3d5cf466063f9275779682b35
+  - sha: e2c76cd71b24c5fcedf1886d08c83bd2a427015b
     changeNotes: regex match
   # Older versions
   - sha: 3edfd43873325ea320150144022e0458863ea9de
