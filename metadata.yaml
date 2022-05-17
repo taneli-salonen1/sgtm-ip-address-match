@@ -2,9 +2,11 @@ homepage: "https://tanelytics.com"
 documentation: "https://github.com/taneli-salonen1/sgtm-ip-address-match"
 versions:
   # Latest version
+  - sha: fdfecaeff7efb1d3d5cf466063f9275779682b35
+    changeNotes: regex match
+  # Older versions
   - sha: 3edfd43873325ea320150144022e0458863ea9de
     changeNotes: return fallback
-  # Older versions
   - sha: 56f61853f17e825ccca7fffca24386dd1f77c1c6
     changeNotes: Use getRemoteAddress function to get the IP
   - sha: a0dc48c37ca8339a05d1a776acd6c72d5ddb7329
