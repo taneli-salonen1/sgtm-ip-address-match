@@ -1,12 +1,4 @@
-﻿___TERMS_OF_SERVICE___
-
-By creating or modifying this file you agree to Google Tag Manager's Community
-Template Gallery Developer Terms of Service available at
-https://developers.google.com/tag-manager/gallery-tos (or such other URL as
-Google may provide), as modified from time to time.
-
-
-___INFO___
+﻿___INFO___
 
 {
   "type": "MACRO",
@@ -28,6 +20,24 @@ ___INFO___
 ___TEMPLATE_PARAMETERS___
 
 [
+  {
+    "type": "SELECT",
+    "name": "ipAddressField",
+    "displayName": "IP Address Field",
+    "macrosInSelect": true,
+    "selectItems": [
+      {
+        "value": "request_headers",
+        "displayValue": "Request Headers"
+      },
+      {
+        "value": "ip_override",
+        "displayValue": "ip_override"
+      }
+    ],
+    "simpleValueType": true,
+    "help": "The IP address is read from this field. Defaults to using the \u003cstrong\u003egetRemoteAddress()\u003c/strong\u003e method which is based on the Forwarded and X-Forwarded-For headers.\u003c/br\u003e\u003c/br\u003e\nSelect \u003cstrong\u003eip_override\u003c/strong\u003e to read the incoming request\u0027s IP address from the event parameter instead."
+  },
   {
     "type": "PARAM_TABLE",
     "name": "excludedIPs",
@@ -139,14 +149,26 @@ ___TEMPLATE_PARAMETERS___
 
 ___SANDBOXED_JS_FOR_SERVER___
 
-//const getRequestHeader = require('getRequestHeader');
 const makeInteger = require('makeInteger');
 const Math = require('Math');
 const log = require('logToConsole');
 const getRemoteAddress = require('getRemoteAddress');
+const getEventData = require('getEventData');
+
+const getIp = () => {
+  // for backwards compatibility, request headers is also the default method for getting the ip
+  if(data.ipAddressField === 'request_headers' || typeof data.ipAddressField === 'undefined') {
+    return getRemoteAddress();
+  }
+  if(data.ipAddressField === 'ip_override') {
+    return getEventData('ip_override');
+  }
+  return data.ipAddressField;
+};
 
 // the IP address of the incoming request
-const requestIp = getRemoteAddress();
+const requestIp = getIp();
+
 
 const excludedIPs = data.excludedIPs;
 
@@ -314,6 +336,39 @@ ___SERVER_PERMISSIONS___
           "value": {
             "type": 1,
             "string": "debug"
+          }
+        }
+      ]
+    },
+    "clientAnnotations": {
+      "isEditedByUser": true
+    },
+    "isRequired": true
+  },
+  {
+    "instance": {
+      "key": {
+        "publicId": "read_event_data",
+        "versionId": "1"
+      },
+      "param": [
+        {
+          "key": "keyPatterns",
+          "value": {
+            "type": 2,
+            "listItem": [
+              {
+                "type": 1,
+                "string": "ip_override"
+              }
+            ]
+          }
+        },
+        {
+          "key": "eventDataAccess",
+          "value": {
+            "type": 1,
+            "string": "specific"
           }
         }
       ]
@@ -497,6 +552,60 @@ scenarios:
 
     mock('getRemoteAddress', (key) => {
       return '194.85.35.40';
+    });
+
+    // Call runCode to run the template's code.
+    let variableResult = runCode(mockData);
+
+    // Verify that the variable returns a result.
+    assertThat(variableResult).isEqualTo(true);
+- name: use ip_override
+  code: |-
+    const mockData = {
+      excludedIPs: [
+        {"matchType":"equals","value":"80.123.62.123"},
+        {"matchType":"begins","value":"xxxxxxxxxx"},
+        {"matchType":"ends","value":"xxxxxxxxxx"},
+        {"matchType":"contains","value":"xxxxxxxxxx"}],
+      ipAddressField: 'ip_override'
+    };
+
+    mock('getRemoteAddress', (key) => {
+      return '80.123.62.124';
+    });
+
+    // ip_override returns a different address compared to request headers
+    mock('getEventData', (key) => {
+      if (key === 'ip_override') {
+        return '80.123.62.123';
+      }
+    });
+
+    // Call runCode to run the template's code.
+    let variableResult = runCode(mockData);
+
+    // Verify that the variable returns a result.
+    assertThat(variableResult).isEqualTo(true);
+- name: custom ip address field
+  code: |-
+    const mockData = {
+      excludedIPs: [
+        {"matchType":"equals","value":"80.123.62.127"},
+        {"matchType":"begins","value":"xxxxxxxxxx"},
+        {"matchType":"ends","value":"xxxxxxxxxx"},
+        {"matchType":"contains","value":"xxxxxxxxxx"}],
+      ipAddressField: '80.123.62.127'
+    };
+
+    mock('getRemoteAddress', (key) => {
+      return '80.123.62.124';
+    });
+
+    // ip_override returns a different address compared to request headers
+    mock('getEventData', (key) => {
+      if (key === 'ip_override') {
+        return '80.123.62.123';
+      }
     });
 
     // Call runCode to run the template's code.
