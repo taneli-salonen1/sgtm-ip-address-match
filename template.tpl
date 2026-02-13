@@ -92,6 +92,16 @@ ___TEMPLATE_PARAMETERS___
       {
         "param": {
           "type": "TEXT",
+          "name": "returnValue",
+          "displayName": "Return value",
+          "simpleValueType": true,
+          "help": "Leave empty for \"true\", or add a value to return"
+        },
+        "isUnique": false
+      },
+      {
+        "param": {
+          "type": "TEXT",
           "name": "description",
           "displayName": "Description",
           "simpleValueType": true,
@@ -102,6 +112,27 @@ ___TEMPLATE_PARAMETERS___
     ],
     "alwaysInSummary": true,
     "help": "List the IP addresses or address patterns that should be excluded"
+  },
+  {
+    "type": "CHECKBOX",
+    "name": "useDefault",
+    "checkboxText": "Use custom default return value",
+    "simpleValueType": true,
+    "help": "Default return value is \u0027false\u0027. Check this if you want to customize"
+  },
+  {
+    "type": "TEXT",
+    "name": "defaultValue",
+    "displayName": "Default return value",
+    "simpleValueType": true,
+    "help": "If nothing matches, use this value",
+    "enablingConditions": [
+      {
+        "paramName": "useDefault",
+        "paramValue": true,
+        "type": "EQUALS"
+      }
+    ]
   }
 ]
 
@@ -161,16 +192,21 @@ const ipMatch = (matchType, value, ip) => {
 
 if (requestIp) {
   if (excludedIPs) {
-    // return true if any of the patterns match the visitor's IP
+    // return true/a value if any of the patterns match the visitor's IP
     for (let i = 0; i < excludedIPs.length; i++) {
       const obj = excludedIPs[i];
       if (ipMatch(obj.matchType, obj.value, requestIp) === true) {
-        return true;
+        return obj.returnValue ? obj.returnValue : true;
       }
     }
   }
   
-  return false;
+  // no matches, so return custom value or just 'false'
+  if (data.useDefault) {
+    return data.defaultValue;
+  } else {
+    return false;
+  }
 }
 
 return;
