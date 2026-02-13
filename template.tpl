@@ -167,8 +167,12 @@ const getIp = () => {
 };
 
 // the IP address of the incoming request
-const requestIp = getIp();
+let requestIp = getIp();
 
+// strip the possible port value from the ip address
+if (typeof requestIp === 'string' && requestIp.indexOf(':') !== -1) {
+  requestIp = requestIp.split(':')[0];
+}
 
 const excludedIPs = data.excludedIPs;
 
@@ -606,6 +610,26 @@ scenarios:
       if (key === 'ip_override') {
         return '80.123.62.123';
       }
+    });
+
+    // Call runCode to run the template's code.
+    let variableResult = runCode(mockData);
+
+    // Verify that the variable returns a result.
+    assertThat(variableResult).isEqualTo(true);
+- name: cidr range, ip address with port
+  code: |-
+    const mockData = {
+      excludedIPs: [
+        {"matchType":"equals","value":"xxxxxxxxxx"},
+        {"matchType":"begins","value":"xxxxxxxxxx"},
+        {"matchType":"ends","value":"xxxxxxxxxx"},
+        {"matchType":"contains","value":"xxxxxxxxxx"},
+        {"matchType":"cidr4","value":"62.63.248.43/32"}]
+    };
+
+    mock('getRemoteAddress', (key) => {
+      return '62.63.248.43:32433';
     });
 
     // Call runCode to run the template's code.
