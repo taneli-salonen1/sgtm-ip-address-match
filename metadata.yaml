@@ -2,9 +2,11 @@ homepage: "https://tanelytics.com"
 documentation: "https://github.com/taneli-salonen1/sgtm-ip-address-match"
 versions:
   # Latest version
+  - sha: 99fbfec651a7aafc0e63a60e730f2703b8a0bbe1
+    changeNotes: Support using ip_override or any other custom value as the ip address. Strip possible port number from the ip address. Allow customizing the return values to be something else than true/false.
+  # Older versions
   - sha: e2c76cd71b24c5fcedf1886d08c83bd2a427015b
     changeNotes: regex match
-  # Older versions
   - sha: 3edfd43873325ea320150144022e0458863ea9de
     changeNotes: return fallback
   - sha: 56f61853f17e825ccca7fffca24386dd1f77c1c6
