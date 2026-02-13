@@ -95,7 +95,7 @@ ___TEMPLATE_PARAMETERS___
           "name": "returnValue",
           "displayName": "Return value",
           "simpleValueType": true,
-          "help": "Leave empty for \"true\", or add a value to return"
+          "help": "The value to return when the IP address matches this pattern. Leave empty for \"true\", or add a custom value to return."
         },
         "isUnique": false
       },
@@ -125,7 +125,7 @@ ___TEMPLATE_PARAMETERS___
     "name": "defaultValue",
     "displayName": "Default return value",
     "simpleValueType": true,
-    "help": "If nothing matches, use this value",
+    "help": "If none of the IP patterns match, return this value",
     "enablingConditions": [
       {
         "paramName": "useDefault",
